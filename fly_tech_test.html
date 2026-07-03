@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Fortify Your Knowledge of Flies — Tech Test</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: #1a1a1a;
+    overscroll-behavior: none;
+    touch-action: manipulation;
+  }
+  #app {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 16px;
+  }
+  .card {
+    width: 100%;
+    max-width: 640px;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    overflow: hidden;
+  }
+  .band {
+    background: #111;
+    padding: 4px 0 0 0;
+  }
+  .band .stripe {
+    height: 6px;
+    background: linear-gradient(90deg,#c9c9c9,#eee,#c9c9c9);
+  }
+  header {
+    background: #111;
+    color: #fff;
+    padding: 18px 20px 22px 20px;
+    position: relative;
+  }
+  .tag {
+    display: inline-block;
+    background: #111;
+    border: 2px solid #fff;
+    color: #fff;
+    font-weight: 800;
+    letter-spacing: 3px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-family: Arial, sans-serif;
+  }
+  h1 {
+    font-family: Georgia, serif;
+    font-weight: 800;
+    font-size: clamp(24px, 6vw, 34px);
+    margin: 14px 0 0 0;
+    line-height: 1.1;
+  }
+  h1 .red { color: #b5121b; }
+  .sub {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    color: #ccc;
+    margin-top: 8px;
+    letter-spacing: 1px;
+  }
+  .body {
+    padding: 22px 22px 26px 22px;
+  }
+  .exit-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+  }
+  .exit-btn {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    color: #666;
+    background: #f6f5f2;
+    border: 1px solid #e3e1db;
+    border-radius: 20px;
+    padding: 6px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .exit-btn:active { transform: scale(0.96); }
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    font-family: Arial, sans-serif;
+  }
+  .progress-bar {
+    flex: 1;
+    height: 8px;
+    background: #eee;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: #b5121b;
+    width: 0%;
+    transition: width 0.35s ease;
+  }
+  .progress-text {
+    font-size: 12px;
+    color: #666;
+    white-space: nowrap;
+    font-weight: bold;
+  }
+  .score-pill {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    background: #111;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .qnum {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: #b5121b;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+  .question {
+    font-size: clamp(18px, 4.6vw, 22px);
+    line-height: 1.35;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+  }
+  .question i { color: #444; }
+  .options {
+    margin-top: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .opt {
+    font-family: Arial, sans-serif;
+    text-align: left;
+    background: #f6f5f2;
+    border: 2px solid #e3e1db;
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 15px;
+    color: #222;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .opt:active { transform: scale(0.98); }
+  .opt:hover { border-color: #b5121b; background: #fbf1f1; }
+  .opt .letter {
+    font-weight: bold;
+    color: #b5121b;
+    min-width: 18px;
+  }
+  .opt.correct {
+    background: #e8f5e9;
+    border-color: #2e7d32;
+  }
+  .opt.correct .letter { color: #2e7d32; }
+  .opt.wrong {
+    background: #fdecea;
+    border-color: #b5121b;
+  }
+  .opt.disabled { pointer-events: none; opacity: 0.55; }
+  .opt.disabled.correct, .opt.disabled.wrong { opacity: 1; }
+  .feedback {
+    margin-top: 14px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    display: none;
+    line-height: 1.5;
+  }
+  .feedback.show { display: block; }
+  .feedback.right { background: #e8f5e9; color: #1b5e20; }
+  .feedback.miss { background: #fdecea; color: #7a0c14; }
+  .feedback b { display: block; margin-bottom: 4px; font-size: 15px; }
+  .nextbtn {
+    margin-top: 18px;
+    width: 100%;
+    padding: 14px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 15px;
+    letter-spacing: 1px;
+    background: #111;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    display: none;
+  }
+  .nextbtn.show { display: block; }
+  .nextbtn:active { transform: scale(0.98); }
+
+  /* results screen */
+  .results { text-align: center; padding-top: 6px; }
+  .bug {
+    font-size: 60px;
+    margin-bottom: 6px;
+  }
+  .results h2 {
+    font-family: Georgia, serif;
+    font-size: 26px;
+    margin: 6px 0 2px 0;
+    color: #1a1a1a;
+  }
+  .results .scoreline {
+    font-family: Arial, sans-serif;
+    font-size: 44px;
+    font-weight: 800;
+    color: #b5121b;
+    margin: 10px 0 2px 0;
+  }
+  .results .scorelabel {
+    font-family: Arial, sans-serif;
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 18px;
+  }
+  .results .rank {
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    color: #111;
+    background: #f6f5f2;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 18px;
+  }
+  .tidbit {
+    text-align: left;
+    background: #b5121b;
+    color: #fff;
+    border-radius: 10px;
+    padding: 16px 18px;
+    font-family: Arial, sans-serif;
+    margin-bottom: 18px;
+  }
+  .tidbit .tt-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    font-weight: bold;
+    opacity: 0.85;
+    margin-bottom: 6px;
+  }
+  .tidbit .tt-title {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+  .tidbit p { font-size: 13px; line-height: 1.55; margin: 0; }
+  .actions { display: flex; gap: 10px; }
+  .actions button {
+    flex: 1;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    padding: 13px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .btn-primary { background: #b5121b; color: #fff; }
+  .btn-secondary { background: #eee; color: #222; }
+
+  .start-screen { text-align: center; }
+  .start-screen p {
+    font-family: Arial, sans-serif;
+    color: #444;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 22px;
+  }
+  .start-screen .bigbug { font-size: 64px; margin: 6px 0 10px 0; }
+  .startbtn {
+    width: 100%;
+    padding: 16px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 16px;
+    letter-spacing: 1px;
+    background: #b5121b;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  .startbtn:active { transform: scale(0.98); }
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 20px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-box {
+    background: #fff;
+    border-radius: 14px;
+    padding: 22px;
+    max-width: 340px;
+    width: 100%;
+    text-align: center;
+    font-family: Arial, sans-serif;
+  }
+  .modal-box .m-icon { font-size: 36px; margin-bottom: 8px; }
+  .modal-box h3 { margin: 0 0 6px 0; font-family: Georgia, serif; color: #1a1a1a; }
+  .modal-box p { margin: 0 0 18px 0; font-size: 13px; color: #666; line-height: 1.5; }
+  .modal-actions { display: flex; gap: 10px; }
+  .modal-actions button {
+    flex: 1;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  footer {
+    text-align: center;
+    font-family: Arial, sans-serif;
+    color: #666;
+    font-size: 11px;
+    margin-top: 14px;
+    letter-spacing: 0.5px;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="card">
+    <div class="band"><div class="stripe"></div></div>
+    <header>
+      <span class="tag">TECH TEST</span>
+      <h1>Fortify your <span class="red">knowledge of flies</span></h1>
+      <div class="sub">10 QUESTIONS · TAP AN ANSWER TO SCORE</div>
+    </header>
+    <div class="body" id="body"></div>
+  </div>
+  <footer>Based on the July 2026 Tech Test, Pest Management Professional</footer>
+</div>
+
+<div class="modal-overlay" id="exitModal">
+  <div class="modal-box">
+    <div class="m-icon">🚪</div>
+    <h3>Exit the quiz?</h3>
+    <p>Your progress on this attempt will be lost and your score won't be saved.</p>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeExitModal()">Keep Playing</button>
+      <button class="btn-primary" onclick="confirmExit()">Exit</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    q: "Some cluster flies (<i>Pollenia</i> spp.) lay eggs in soil where the larvae can hunt for their hosts, earthworms.",
+    type: "tf",
+    options: ["True", "False"],
+    answer: 0,
+    explain: "Cluster fly larvae are parasitic on earthworms, seeking them out in the soil after hatching."
+  },
+  {
+    q: "How many longitudinal stripes are on top of the thorax of a house fly (<i>Musca domestica</i>)?",
+    type: "mc",
+    options: ["Two, and they are dark", "Two, and they are light", "Four, and they are dark", "Four, and they are light"],
+    answer: 2,
+    explain: "House flies have four dark longitudinal stripes running down the top of the thorax — a classic ID feature."
+  },
+  {
+    q: "One reason small fruit flies (Drosophilidae) are used in research is because they reproduce quickly.",
+    type: "tf",
+    options: ["True", "False"],
+    answer: 0,
+    explain: "Their rapid life cycle and short generation time make fruit flies a research staple, including in genetics."
+  },
+  {
+    q: "The stable fly (<i>Stomoxys calcitrans</i>) typically feeds with its head oriented upward, while on the legs of cattle.",
+    type: "tf",
+    options: ["True", "False"],
+    answer: 0,
+    explain: "Stable flies commonly bite on the legs with the head angled upward as they feed on blood."
+  },
+  {
+    q: "What is the length of a typical drain fly (Psychodidae)?",
+    type: "mc",
+    options: ["0.125 inch", "0.5 inch", "0.75 inch", "None of the above"],
+    answer: 0,
+    explain: "Drain flies (moth flies) are tiny — roughly 1/8 inch (0.125 in) long, with fuzzy, moth-like wings."
+  },
+  {
+    q: "How does the house fly (<i>Musca domestica</i>) transmit bacteria and viruses capable of causing illnesses such as food poisoning, diarrhea, dysentery and cholera?",
+    type: "mc",
+    options: ["Body surfaces and hair", "Saliva and vomit", "Feces", "All of the above"],
+    answer: 3,
+    explain: "House flies pick up and spread pathogens through their hairy bodies, saliva, vomit, and feces — all of the above."
+  },
+  {
+    q: "Only the female stable fly (<i>Stomoxys calcitrans</i>) feeds on the blood of livestock, pets and humans.",
+    type: "tf",
+    options: ["True", "False"],
+    answer: 1,
+    explain: "False — unlike mosquitoes, both male and female stable flies feed on blood."
+  },
+  {
+    q: "The adult cluster fly (<i>Pollenia</i> spp.) survives winters in a semi-dormant condition that is called:",
+    type: "mc",
+    options: ["Diorama", "Diapason", "Diapause", "Diplo"],
+    answer: 2,
+    explain: "Diapause is the semi-dormant, overwintering state cluster flies enter, often clustering in wall voids and attics."
+  },
+  {
+    q: "Why are adult hover flies (Syrphidae spp.) often mistaken for bees?",
+    type: "mc",
+    options: ["They often have black and yellow stripes", "They visit flowers for food", "They pulse their abdomens", "All of the above"],
+    answer: 3,
+    explain: "Hover flies mimic bees in coloring, visit flowers, and pulse their abdomens — all of the above contribute to the mix-up."
+  },
+  {
+    q: "Why does the house fly (<i>Musca domestica</i>) need water?",
+    type: "mc",
+    options: ["To help produce the saliva needed to turn solid foods into liquid", "To help keep them cool when temperatures rise", "To help them fly farther and faster", "All of the above"],
+    answer: 0,
+    explain: "House flies can't chew — they need water to help produce saliva that liquefies solid food before they can consume it."
+  }
+];
+
+let current = 0;
+let score = 0;
+let answered = false;
+
+const body = document.getElementById('body');
+
+function renderStart() {
+  body.innerHTML = `
+    <div class="start-screen">
+      <div class="bigbug">🪰</div>
+      <p>Think you know your flies? Test your ID skills, biology facts, and IPM know-how across 10 quick questions pulled straight from the field.</p>
+      <button class="startbtn" onclick="startQuiz()">START THE TEST</button>
+    </div>
+  `;
+}
+
+function startQuiz() {
+  current = 0;
+  score = 0;
+  renderQuestion();
+}
+
+function renderQuestion() {
+  answered = false;
+  const q = QUESTIONS[current];
+  const pct = Math.round((current / QUESTIONS.length) * 100);
+
+  let optsHtml = q.options.map((opt, i) => {
+    const letter = String.fromCharCode(97 + i);
+    return `<button class="opt" data-idx="${i}" onclick="selectOption(${i})">
+      <span class="letter">${letter}.</span><span>${opt}</span>
+    </button>`;
+  }).join('');
+
+  body.innerHTML = `
+    <div class="exit-row">
+      <button class="exit-btn" onclick="openExitModal()">✕ Exit</button>
+    </div>
+    <div class="progress-wrap">
+      <span class="score-pill">SCORE ${score}/${QUESTIONS.length}</span>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <span class="progress-text">${current + 1} / ${QUESTIONS.length}</span>
+    </div>
+    <div class="qnum">${current + 1}</div>
+    <div class="question">${q.q}</div>
+    <div class="options">${optsHtml}</div>
+    <div class="feedback" id="feedback"></div>
+    <button class="nextbtn" id="nextbtn" onclick="nextQuestion()">
+      ${current === QUESTIONS.length - 1 ? 'SEE RESULTS' : 'NEXT QUESTION'}
+    </button>
+  `;
+}
+
+function selectOption(idx) {
+  if (answered) return;
+  answered = true;
+  const q = QUESTIONS[current];
+  const opts = document.querySelectorAll('.opt');
+  const correct = idx === q.answer;
+  if (correct) score++;
+
+  opts.forEach((el, i) => {
+    el.classList.add('disabled');
+    if (i === q.answer) el.classList.add('correct');
+    else if (i === idx) el.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('feedback');
+  fb.classList.add('show');
+  fb.classList.add(correct ? 'right' : 'miss');
+  fb.innerHTML = `<b>${correct ? '✅ Correct!' : '❌ Not quite.'}</b>${q.explain}`;
+
+  document.getElementById('nextbtn').classList.add('show');
+}
+
+function openExitModal() {
+  document.getElementById('exitModal').classList.add('show');
+}
+
+function closeExitModal() {
+  document.getElementById('exitModal').classList.remove('show');
+}
+
+function confirmExit() {
+  closeExitModal();
+  renderStart();
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= QUESTIONS.length) {
+    renderResults();
+  } else {
+    renderQuestion();
+  }
+}
+
+function renderResults() {
+  const pct = Math.round((score / QUESTIONS.length) * 100);
+  let rank, bug;
+  if (pct === 100) { rank = "🏆 Fly Fluent — perfect score! You could teach this Tech Test."; bug = "🥇"; }
+  else if (pct >= 80) { rank = "🎯 Sharp Eye — you clearly know your flies."; bug = "🪰"; }
+  else if (pct >= 50) { rank = "🔍 Field Ready — solid foundation, a few gaps to close."; bug = "🧐"; }
+  else { rank = "📚 Time to Study — brush up on fly biology and ID basics."; bug = "📖"; }
+
+  body.innerHTML = `
+    <div class="results">
+      <div class="bug">${bug}</div>
+      <h2>Test Complete</h2>
+      <div class="scoreline">${score}/${QUESTIONS.length}</div>
+      <div class="scorelabel">${pct}% CORRECT</div>
+      <div class="rank">${rank}</div>
+      <div class="tidbit">
+        <div class="tt-label">TECH TEST TIDBIT</div>
+        <div class="tt-title">Slimy surroundings</div>
+        <p>Drain fly (Psychodidae) larvae and pupae live in the thin microbial films found in drains, underground septic tank field lines, and on filter stones in wastewater treatment plants. They feed on algae, bacteria, fungi and other microscopic organisms in the film. Indoors, they can breed in floor or sink drains, A/C or refrigerator condensate pans, garbage can bottoms, cracked tile, sliding door tracks, and wet cracks near dirty floor drains.</p>
+      </div>
+      <div class="actions">
+        <button class="btn-secondary" onclick="renderStart()">Home</button>
+        <button class="btn-primary" onclick="startQuiz()">Retake Test</button>
+      </div>
+    </div>
+  `;
+}
+
+renderStart();
+</script>
+</body>
+</html>
